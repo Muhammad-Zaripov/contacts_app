@@ -137,97 +137,123 @@ class _HomeScreenState extends State<HomeScreen> {
                 itemCount: persons.length,
                 itemBuilder: (context, index) {
                   final person = persons[index];
-                  return ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.grey,
-                      child: Text(
-                        person.name.isNotEmpty ? person.name[0] : '?',
-                        style: TextStyle(color: Colors.white),
+                  return Dismissible(
+                    key: Key(person.id.toString()),
+                    background: Container(
+                      color: Colors.blue,
+                      alignment: Alignment.centerLeft,
+                      padding: EdgeInsets.only(left: 20),
+                      child: Row(
+                        spacing: 20,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.edit, color: Colors.white),
+                          Text(
+                            'Edit',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                        ],
                       ),
                     ),
-                    title: Text(
-                      person.name,
-                      style: TextStyle(color: Colors.white, fontSize: 20),
+                    secondaryBackground: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(right: 20),
+                      child: Row(
+                        spacing: 20,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            'Delete',
+                            style: TextStyle(color: Colors.white, fontSize: 20),
+                          ),
+                          Icon(Icons.delete, color: Colors.white),
+                        ],
+                      ),
                     ),
-                    subtitle: Text(
-                      person.number,
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () {
-                            final person = persons[index];
-
-                            showDialog(
-                              barrierDismissible: false,
-                              context: context,
-                              builder: (context) {
-                                return AlertDialog(
-                                  backgroundColor: Colors.grey,
-                                  content: Column(
-                                    spacing: 20,
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      TextField(
-                                        controller: newNameController,
-                                        decoration: InputDecoration(
-                                          hintText: person.name,
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                      TextField(
-                                        controller: newNumberController,
-                                        decoration: InputDecoration(
-                                          hintText: person.number,
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    ],
+                    confirmDismiss: (direction) async {
+                      if (direction == DismissDirection.startToEnd) {
+                        showDialog(
+                          barrierDismissible: false,
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              backgroundColor: Colors.grey,
+                              content: Column(
+                                spacing: 20,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  TextField(
+                                    controller: newNameController,
+                                    decoration: InputDecoration(
+                                      hintText: person.name,
+                                      border: OutlineInputBorder(),
+                                    ),
                                   ),
-                                  actions: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        TextButton(
-                                          onPressed: () {
-                                            Navigator.pop(context);
-                                          },
-                                          child: Text(
-                                            'Cancel',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                        TextButton(
-                                          onPressed: () {
-                                            _updatePerson(person.id!);
-                                          },
-                                          child: Text(
-                                            'Save',
-                                            style: TextStyle(
-                                              color: Colors.black,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                  TextField(
+                                    controller: newNumberController,
+                                    decoration: InputDecoration(
+                                      hintText: person.number,
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () {
+                                        _updatePerson(person.id!);
+                                      },
+                                      child: Text(
+                                        'Save',
+                                        style: TextStyle(color: Colors.black),
+                                      ),
                                     ),
                                   ],
-                                );
-                              },
+                                ),
+                              ],
                             );
                           },
+                        );
+                        return false;
+                      } else if (direction == DismissDirection.endToStart) {
+                        await _deletePerson(person.id!);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text('${person.name} deleted')),
+                        );
+                        return true;
+                      }
+                      return false;
+                    },
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        child: Text(
+                          person.name.isNotEmpty ? person.name[0] : '?',
+                          style: TextStyle(color: Colors.white),
                         ),
-
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => _deletePerson(person.id!),
-                        ),
-                      ],
+                      ),
+                      title: Text(
+                        person.name,
+                        style: TextStyle(color: Colors.white, fontSize: 20),
+                      ),
+                      subtitle: Text(
+                        person.number,
+                        style: TextStyle(color: Colors.grey, fontSize: 16),
+                      ),
                     ),
                   );
                 },

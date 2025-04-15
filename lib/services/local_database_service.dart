@@ -59,4 +59,8 @@ class LocalDatabase {
     final db = await database;
     return await db.delete('persons', where: 'id = $id');
   }
+
+  Future<void> close() async {
+    _database?.close();
+  }
 }

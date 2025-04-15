@@ -53,6 +53,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     _loadPersons();
     Navigator.pop(context);
+    newNameController.clear();
+    newNumberController.clear();
   }
 
   @override
@@ -139,7 +141,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     leading: CircleAvatar(
                       backgroundColor: Colors.grey,
                       child: Text(
-                        person.name[0],
+                        person.name.isNotEmpty ? person.name[0] : '?',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),

@@ -51,13 +51,12 @@ class LocalDatabase {
     return await db.update(
       'persons',
       person.toMap(),
-      where: 'id = ?',
-      whereArgs: [person.id],
+      where: 'id = ${person.id}',
     );
   }
 
   Future<int> deletePerson(int id) async {
     final db = await database;
-    return await db.delete('persons', where: 'id = ?', whereArgs: [id]);
+    return await db.delete('persons', where: 'id = $id');
   }
 }
